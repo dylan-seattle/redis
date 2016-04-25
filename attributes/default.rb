@@ -1,0 +1,1 @@
+default['redis']['version_number'] = '2.8.9'

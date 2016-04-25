@@ -13,6 +13,8 @@ describe 'redis::default' do
       runner.converge(described_recipe)
     end
 
+    
+
     it 'converges successfully' do
       expect { chef_run }.to_not raise_error
     end
@@ -21,21 +23,20 @@ describe 'redis::default' do
     	expect(chef_run).to run_execute('apt-get update')
     end 
     it 'install the necessary packages' do 
-    	expect(chef_run).to install_package('build-essential')
-    	expect(chef_run).to install_package('tcl8.5')
+    	expect(chef_run).to install_package(['build-essential','tcl8.5'])
     end 
     it 'retrieves the source code' do 
-    	expect(chef_run).to create_remote_file('/tmp/redis-2.8.9.tar.gz') 
+    	expect(chef_run).to create_remote_file("/tmp/redis-#{version_number}.tar.gz") 
     end 
     it 'unzips the source code' do
     	
-    	resource = chef_run.remote_file('/tmp/redis-2.8.9.tar.gz')
-    	expect(resource).to notify('execute[tar xzf /tmp/redis-2.8.9.tar.gz]').to(:run).immediately
+    	resource = chef_run.remote_file("/tmp/redis-#{version_number}.tar.gz")
+    	expect(resource).to notify('execute[unzip_redis_archive]').to(:run).immediately
     	end
     	
     it 'builds the application' do
     	
-    	resource = chef_run.execute('tar xzf /tmp/redis-2.8.9.tar.gz')
+    	resource = chef_run.execute('unzip_redis_archive')
     	expect(resource).to notify('execute[make && make install]').to(:run).immediately
     	end
     it 'install redis server'  do
